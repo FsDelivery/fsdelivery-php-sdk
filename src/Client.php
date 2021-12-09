@@ -3,6 +3,7 @@
 namespace FsDeliverySdk;
 
 use FsDeliverySdk\Exception\FsDeliveryException;
+use FsDeliverySdk\ValueObject\CitiesFilter;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -177,5 +178,41 @@ class Client implements LoggerAwareInterface
         if (!empty($delivery_id)) $params['delivery_company_id'] = $delivery_id;
         if (!empty($type_id)) $params['type_id'] = $type_id;
         return $this->callApi('POST', self::VERSION."/delivery/tariffs", $params);
+    }
+
+    /**
+     * Получение списка стран
+     *
+     * @param int $country_id - ID страны по базе FsDelivery
+     * @param string $country_code - Код страны (ISO 3166-1 2 буквы)
+     * @param string $country_name - Точное название страны ( например Россия ), поиск без учета регистра
+     * @return array
+     * @throws FsDeliveryException
+     */
+    public function getReferenceCountries($country_id = null, $country_code = null, $country_name = null)
+    {
+        $params = [];
+        if (!empty($country_id)) $params['country_id'] = $country_id;
+        if (!empty($country_code)) $params['country_code'] = $country_code;
+        if (!empty($country_name)) $params['country_name'] = $country_name;
+        return $this->callApi('POST', self::VERSION."/reference/countries", $params);
+    }
+
+    /**
+     * Получение списка городов
+     *
+     * @param CitiesFilter $search_filter - объект-фильтр
+     * @param int $page_number - Номер страницы для выборки
+     * @param int $page_size - Количество результатов на странице
+     * @return array
+     * @throws FsDeliveryException
+     */
+    public function getReferenceCities($search_filter, $page_number = 1, $page_size = 100)
+    {
+        $params = [];
+        if (!empty($page_number)) $params['page_number'] = $page_number;
+        if (!empty($page_size)) $params['page_size'] = $page_size;
+        $params = array_merge($params, $search_filter->getParams());
+        return $this->callApi('POST', self::VERSION."/reference/cities", $params);
     }
 }
