@@ -1,0 +1,40 @@
+{
+  "name": "fsdelivery/fsdelivery-php-sdk",
+  "description": "Полная SDK агрегатора служб доставки FsDelivery.ru",
+  "keywords": [
+    "FsDelivery",
+    "php-sdk",
+    "integror",
+    "cdek",
+    "boxberry",
+    "iml",
+    "pochta"
+  ],
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "type": "extension",
+  "support": {
+    "issues": "https://github.com/FsDelivery/fsdelivery-php-sdk/issues",
+    "source": "https://github.com/FsDelivery/fsdelivery-php-sdk"
+  },
+  "authors": [
+    {
+      "name": "FsDelivery",
+      "email": "support@fsdelivery.ru",
+      "homepage": "https://fsdelivery.ru",
+      "role": "Creator"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "FsDeliverySdk\\": "src"
+    }
+  },
+  "require": {
+    "ext-json": "*",
+    "php": ">=5.5",
+    "guzzlehttp/guzzle": "6.3 - 7.3",
+    "psr/log": "^1.0"
+  }
+}
+
