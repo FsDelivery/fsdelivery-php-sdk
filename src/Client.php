@@ -4,6 +4,8 @@ namespace FsDeliverySdk;
 
 use FsDeliverySdk\Exception\FsDeliveryException;
 use FsDeliverySdk\ValueObject\CitiesFilter;
+use FsDeliverySdk\ValueObject\OrderFilter;
+use FsDeliverySdk\ValueObject\OrderStatusFilter;
 use FsDeliverySdk\ValueObject\PvzFilter;
 use FsDeliverySdk\ValueObject\ReestrFilter;
 use Psr\Log\LoggerAwareInterface;
@@ -255,7 +257,6 @@ class Client implements LoggerAwareInterface
      *
      * @param ReestrFilter $reestrFilter - объект-фильтр
      * @return array
-     * @throws \InvalidArgumentException
      * @throws FsDeliveryException
      */
     public function getReestrList($reestrFilter)
@@ -288,5 +289,40 @@ class Client implements LoggerAwareInterface
     public function getReestrStatuses()
     {
         return $this->callApi('GET', self::VERSION."/reference/reestr/statuses");
+    }
+
+    /**
+     * ПОЛУЧЕНИЕ ИНФОРМАЦИИ О ПОЛЬЗОВАТЕЛЕ
+     *
+     * @return array
+     * @throws FsDeliveryException
+     */
+    public function getUserInfo()
+    {
+        return $this->callApi('GET', self::VERSION."/user/info");
+    }
+
+    /**
+     * ПОЛУЧЕНИЕ СТАТУСОВ ЗАКАЗА
+     *
+     * @param OrderStatusFilter $orderStatusFilter - объект-фильтр
+     * @return array
+     * @throws FsDeliveryException
+     */
+    public function getOrderStatuses($orderStatusFilter)
+    {
+        return $this->callApi('POST', self::VERSION."/order/statuses", $orderStatusFilter->getParams());
+    }
+
+    /**
+     * ПОЛУЧЕНИЕ СТАТУСОВ ЗАКАЗА
+     *
+     * @param OrderFilter $orderFilter - объект-фильтр
+     * @return array
+     * @throws FsDeliveryException
+     */
+    public function getOrders($orderFilter)
+    {
+        return $this->callApi('POST', self::VERSION."/order/find", $orderFilter->getParams());
     }
 }

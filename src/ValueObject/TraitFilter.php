@@ -12,7 +12,13 @@ trait TraitFilter
         foreach (get_object_vars($this) as $property => $value) {
             if (!empty($value)) {
                 if (is_a($value, \DateTimeImmutable::class)) {
-                    $params[$property] = $value->format('Y-m-d');
+                    if (in_array($property, ['create_date_begin', 'delivery_date_begin'])) {
+                        $params[str_replace('_begin', '', $property)]['date_beg'] = $value->format('Y-m-d');
+                    } else if (in_array($property, ['create_date_end', 'delivery_date_end'])) {
+                        $params[str_replace('_end', '', $property)]['date_end'] = $value->format('Y-m-d');
+                    } else {
+                        $params[$property] = $value->format('Y-m-d');
+                    }
                 } else {
                     $params[$property] = $value;
                 }
