@@ -5,6 +5,7 @@ namespace FsDeliverySdk;
 use FsDeliverySdk\Exception\FsDeliveryException;
 use FsDeliverySdk\ValueObject\CitiesFilter;
 use FsDeliverySdk\ValueObject\PvzFilter;
+use FsDeliverySdk\ValueObject\ReestrFilter;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -202,18 +203,18 @@ class Client implements LoggerAwareInterface
     /**
      * Получение списка городов
      *
-     * @param CitiesFilter $search_filter - объект-фильтр
+     * @param CitiesFilter $searchFilter - объект-фильтр
      * @param int $page_number - Номер страницы для выборки
      * @param int $page_size - Количество результатов на странице
      * @return array
      * @throws FsDeliveryException
      */
-    public function getReferenceCities($search_filter, $page_number = 1, $page_size = 100)
+    public function getReferenceCities($searchFilter, $page_number = 1, $page_size = 100)
     {
         $params = [];
         if (!empty($page_number)) $params['page_number'] = $page_number;
         if (!empty($page_size)) $params['page_size'] = $page_size;
-        $params = array_merge($params, $search_filter->getParams());
+        $params = array_merge($params, $searchFilter->getParams());
         return $this->callApi('POST', self::VERSION."/reference/cities", $params);
     }
 
@@ -240,12 +241,52 @@ class Client implements LoggerAwareInterface
     /**
      * Получение списка пунктов выдачи заказов (ПВЗ)
      *
-     * @param PvzFilter $search_filter - объект-фильтр
+     * @param PvzFilter $pvzFilter - объект-фильтр
      * @return array
      * @throws FsDeliveryException
      */
-    public function getDeliveryPoints($pvz_filter)
+    public function getDeliveryPoints($pvzFilter)
     {
-        return $this->callApi('POST', self::VERSION."/delivery/points", $pvz_filter->getParams());
+        return $this->callApi('POST', self::VERSION."/delivery/points", $pvzFilter->getParams());
+    }
+
+    /**
+     * СПИСОК РЕЕСТРОВ НП
+     *
+     * @param ReestrFilter $reestrFilter - объект-фильтр
+     * @return array
+     * @throws \InvalidArgumentException
+     * @throws FsDeliveryException
+     */
+    public function getReestrList($reestrFilter)
+    {
+        return $this->callApi('POST', self::VERSION."/reestr/list", $reestrFilter->getParams());
+    }
+
+    /**
+     * ДЕТАЛИЗАЦИЯ ПО РЕЕСТРУ НП
+     *
+     * @param int $reestr_number - Номер реестра наложенного платежа ( поле number из метода /1.0/reestr/list )
+     * @return array
+     * @throws \InvalidArgumentException
+     * @throws FsDeliveryException
+     */
+    public function getReestrWaybills($reestr_number)
+    {
+        if (empty($reestr_number))
+            throw new \InvalidArgumentException('Не передан номер реестра');
+
+        return $this->callApi('POST', self::VERSION."/reestr/waybills", ['reestr_number' => $reestr_number]);
+    }
+
+    /**
+     * СТАТУСЫ РЕЕСТРОВ НП
+     *
+     * @return array
+     * @throws FsDeliveryException
+     */
+    public function getReestrStatuses()
+    {
+        return $this->callApi('GET', self::VERSION."/reference/reestr/statuses");
     }
 }
