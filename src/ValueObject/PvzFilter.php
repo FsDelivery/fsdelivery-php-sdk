@@ -1,12 +1,14 @@
 <?php
 namespace FsDeliverySdk\ValueObject;
 
-class CitiesFilter
+class PvzFilter
 {
     use TraitFilter;
 
     /** @var int */
     private $fsdelivery_city_id; // ID города по базе FSDelivery
+    /** @var int */
+    private $fsdelivery_country_id; // ID страны по базе FsDelivery из метода получения списка стран
     /** @var string */
     private $kladr_id; // Код города по КЛАДР
     /** @var string */
@@ -15,6 +17,8 @@ class CitiesFilter
     private $postal_code; // Почтовый индекс города
     /** @var string */
     private $country_iso_code; // Код страны (ISO 3166-1 2 буквы)
+    /** @var string */
+    private $delivery_company_id; // ID курьерской службы по базе FsDelivery из метода получения списка курьерских служб
 
     /**
      * @return int
@@ -30,6 +34,23 @@ class CitiesFilter
     public function setFsdeliveryCityId($fsdelivery_city_id)
     {
         $this->fsdelivery_city_id = $fsdelivery_city_id;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFsdeliveryCountryId()
+    {
+        return $this->fsdelivery_country_id;
+    }
+
+    /**
+     * @param int $fsdelivery_country_id
+     */
+    public function setFsdeliveryCountryId($fsdelivery_country_id)
+    {
+        $this->fsdelivery_country_id = $fsdelivery_country_id;
         return $this;
     }
 
@@ -98,6 +119,23 @@ class CitiesFilter
     public function setCountryIsoCode($country_iso_code)
     {
         $this->country_iso_code = $country_iso_code;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDeliveryCompanyId()
+    {
+        return $this->delivery_company_id;
+    }
+
+    /**
+     * @param string $delivery_company_id
+     */
+    public function setDeliveryCompanyId($delivery_company_id)
+    {
+        $this->delivery_company_id = $delivery_company_id;
         return $this;
     }
 }

@@ -4,6 +4,7 @@ namespace FsDeliverySdk;
 
 use FsDeliverySdk\Exception\FsDeliveryException;
 use FsDeliverySdk\ValueObject\CitiesFilter;
+use FsDeliverySdk\ValueObject\PvzFilter;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -214,5 +215,37 @@ class Client implements LoggerAwareInterface
         if (!empty($page_size)) $params['page_size'] = $page_size;
         $params = array_merge($params, $search_filter->getParams());
         return $this->callApi('POST', self::VERSION."/reference/cities", $params);
+    }
+
+    /**
+     * Получение списка городов для AUTOCOMPLETE
+     *
+     * @param string $char_city_name - Строка поиска по названию города (от двух символов)
+     * @param int|null $fsdelivery_country_id - ID страны по базе FSDelivery
+     * @return array
+     * @throws \InvalidArgumentException
+     * @throws FsDeliveryException
+     */
+    public function getReferenceCitiesAutocomplete($char_city_name, $fsdelivery_country_id = null)
+    {
+        $params = [];
+        if (empty($char_city_name))
+            throw new \InvalidArgumentException('Не передан обязательный параметр $char_city_name');
+
+        $params['char_city_name'] = $char_city_name;
+        if (!empty($fsdelivery_country_id)) $params['fsdelivery_country_id'] = $fsdelivery_country_id;
+        return $this->callApi('POST', self::VERSION."/reference/cities/autocomplete", $params);
+    }
+
+    /**
+     * Получение списка пунктов выдачи заказов (ПВЗ)
+     *
+     * @param PvzFilter $search_filter - объект-фильтр
+     * @return array
+     * @throws FsDeliveryException
+     */
+    public function getDeliveryPoints($pvz_filter)
+    {
+        return $this->callApi('POST', self::VERSION."/delivery/points", $pvz_filter->getParams());
     }
 }
