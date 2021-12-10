@@ -3,6 +3,7 @@
 namespace FsDeliverySdk;
 
 use FsDeliverySdk\Exception\FsDeliveryException;
+use FsDeliverySdk\ValueObject\CalculateParams;
 use FsDeliverySdk\ValueObject\CitiesFilter;
 use FsDeliverySdk\ValueObject\OrderFilter;
 use FsDeliverySdk\ValueObject\OrderStatusFilter;
@@ -315,7 +316,7 @@ class Client implements LoggerAwareInterface
     }
 
     /**
-     * ПОЛУЧЕНИЕ СТАТУСОВ ЗАКАЗА
+     * ПОЛУЧЕНИЕ ИНФОРМАЦИИ ПО ЗАКАЗАМ
      *
      * @param OrderFilter $orderFilter - объект-фильтр
      * @return array
@@ -324,5 +325,17 @@ class Client implements LoggerAwareInterface
     public function getOrders($orderFilter)
     {
         return $this->callApi('POST', self::VERSION."/order/find", $orderFilter->getParams());
+    }
+
+    /**
+     * КАЛЬКУЛЯТОР ТАРИФОВ
+     *
+     * @param CalculateParams $calculateParams - объект-параметры таррификатора
+     * @return array
+     * @throws FsDeliveryException
+     */
+    public function calculateTariff($calculateParams)
+    {
+        return $this->callApi('POST', self::VERSION."/tariff/calculation", $calculateParams->getParams());
     }
 }

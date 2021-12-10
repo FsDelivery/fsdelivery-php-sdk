@@ -1,7 +1,7 @@
 <?php
 namespace FsDeliverySdk\ValueObject;
 
-class PvzFilter
+class PvzFilter implements RequestParamsInterface
 {
     use TraitFilter;
 

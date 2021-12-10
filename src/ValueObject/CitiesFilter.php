@@ -1,7 +1,7 @@
 <?php
 namespace FsDeliverySdk\ValueObject;
 
-class CitiesFilter
+class CitiesFilter implements RequestParamsInterface
 {
     use TraitFilter;
 

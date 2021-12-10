@@ -1,7 +1,7 @@
 <?php
 namespace FsDeliverySdk\ValueObject;
 
-class OrderStatusFilter
+class OrderStatusFilter implements RequestParamsInterface
 {
     use TraitFilter;
 
