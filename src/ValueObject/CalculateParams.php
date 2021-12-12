@@ -29,20 +29,31 @@ class CalculateParams implements RequestParamsInterface
     private $reciver_city_index; // Почтовый индекс города получателя
     /** @var Package[]  */
     private $packages = [];
+    /** @var Item[]  */
+    private $items = [];
 
     public function getParams()
     {
         $params = [];
         foreach (get_object_vars($this) as $property => $value) {
-            if ($property == 'packages') continue;
+            if (in_array($property, ['packages', 'items'])) continue;
             if (!empty($value)) {
                 $params[$property] = $value;
             }
         }
 
-        $params['packages'] = [];
-        foreach ($this->packages as $package) {
-            $params['packages'][] = $package->getParams();
+        if (!empty($this->packages)) {
+            $params['packages'] = [];
+            foreach ($this->packages as $package) {
+                $params['packages'][] = $package->getParams();
+            }
+        }
+
+        if (!empty($this->items)) {
+            $params['items'] = [];
+            foreach ($this->items as $item) {
+                $params['items'][] = $item->getParams();
+            }
         }
 
         return $params;
@@ -266,6 +277,23 @@ class CalculateParams implements RequestParamsInterface
     public function addPackage($pakage)
     {
         $this->packages[] = $pakage;
+        return $this;
+    }
+
+    /**
+     * @return Item[]
+     */
+    public function getItems()
+    {
+        return $this->items;
+    }
+
+    /**
+     * @param Item $item
+     */
+    public function addItem($item)
+    {
+        $this->items[] = $item;
         return $this;
     }
 }
