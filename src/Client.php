@@ -94,13 +94,13 @@ class Client implements LoggerAwareInterface
         switch ($type) {
             case 'GET':
                 if ($this->logger) {
-                    $this->logger->info("FsDelivery API /{$type} request {$method}: " . http_build_query($params));
+                    $this->logger->info("FsDelivery API {$type} request /{$method}: " . http_build_query($params));
                 }
                 $response = $this->httpClient->get($method, ['headers' => $headers, 'query' => $params]);
                 break;
             case 'POST':
                 if ($this->logger) {
-                    $this->logger->info("FsDelivery API /{$type} request {$method}: " . json_encode($params));
+                    $this->logger->info("FsDelivery API {$type} request /{$method}: " . json_encode($params));
                 }
                 $response = $this->httpClient->post($method, ['headers' => $headers, 'json' => $params]);
                 break;
@@ -113,7 +113,7 @@ class Client implements LoggerAwareInterface
         if ($this->logger) {
             $headers = $response->getHeaders();
             $headers['http_status'] = $response->getStatusCode();
-            $this->logger->info("FsDelivery API response {$method}: " . $json, $headers);
+            $this->logger->info("FsDelivery API response /{$method}: " . $json, $headers);
         }
 
         $respFS = json_decode($json, true);
