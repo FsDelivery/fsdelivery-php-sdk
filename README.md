@@ -2119,7 +2119,7 @@ int $type_id - ID режима доставки по базе FsDelivery (не �
             [request_id] => 1a461bb4-a99c-4840-b828-e30cce13cad3
             [username] => Иван Иванов
             [phone] => +79991234567
-            [link] => OriginalDvr
+            [link] => url.ru
             [email] => info@test.ru
             [dogovor] => 1
             [city_name] => Москва
@@ -2137,7 +2137,7 @@ int $type_id - ID режима доставки по базе FsDelivery (не �
             [fsdelivery_on] => 1
             [inn] => 1234567890
             [kpp] => 1
-            [ogrn] => 321874201211313
+            [ogrn] => 3222224222222313
             [okved] => 53.20.3
             [status_company_ur] => Юр. лицо действующее
             [reg_data] => Array
@@ -2165,8 +2165,8 @@ int $type_id - ID режима доставки по базе FsDelivery (не �
                 (
                     [default_item_name] => Заказ 2
                     [default_sender_phone] => 88000000000
-                    [default_sender_street] => Тихомирова
-                    [default_sender_email] => 11@11
+                    [default_sender_street] => Маркситская
+                    [default_sender_email] => info@test.ru
                     [default_sender_shop_name] => -
                     [default_sender_name] => Интернет-магазин
                     [default_sender_comment] => 
