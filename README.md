@@ -1,4 +1,4 @@
-<a href="https://fsdelivery.ru"><img align="right" width="200" src="https://fsdelivery.ru/template/shared/image/fsdelivery/logo.png"></a>
+<a href="https://fsdelivery.ru"><img align="right" width="200" src="https://fsdelivery.ru/template/fsdelivery/images/logo-support.png"></a>
 <br  />
 
 [![Latest Stable Version](https://poser.pugx.org/FsDelivery/fsdelivery-php-sdk/v/stable)](https://packagist.org/packages/FsDelivery/fsdelivery-php-sdk)
