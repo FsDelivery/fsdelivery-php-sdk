@@ -27,7 +27,7 @@
 [Список реестров НП](#reestr_list)  
 [Получение информации о пользователе](#userinfo)  
 [Получение статусов заказа](#order_statuses)  
-[Получение информации по зказам](#orders_info)  
+[Получение информации по заказам](#orders_info)  
 
 <a name="changelog"><h1>Changelog</h1></a>
 - 0.5.0 - Первая версия SDK реализующая методы [API FsDelivery](https://api.fsdelivery.ru/doc/index.html);
