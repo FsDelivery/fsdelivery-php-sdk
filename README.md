@@ -30,12 +30,30 @@
 [Получение информации по заказам](#orders_info)  
 
 <a name="changelog"><h1>Changelog</h1></a>
+- 0.6.0 - Подробное описание можно посмотреть [здесь](https://github.com/FsDelivery/fsdelivery-php-sdk/releases/tag/0.6.0);   
 - 0.5.0 - Первая версия SDK реализующая методы [API FsDelivery](https://api.fsdelivery.ru/doc/index.html);
 
 <a name="install"><h1>Установка</h1></a>
 Для установки можно использовать менеджер пакетов Composer
 
     composer require fsdelivery/fsdelivery-php-sdk
+
+Или при его отсутствии можно использовать встройенный autoload.php.    
+Тогда подключение SDK будет выглядеть так:
+
+```php
+require_once __DIR__.'/autoload.php';
+
+// Если нужно логирование
+$logger = new \FsDeliverySdk\Log\Logger();
+$logger->setFilePath('/path/to/log.txt');
+
+$Client = new \FsDeliverySdk\Client('eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9');
+$Client->setLogger($logger); // Подключение логгера
+```
+
+Если в вашей системе установлен Http-клиент Guzzle, то для запросов к API будет использоваться он.     
+При его отсутствии будет задействован встроенный [HttpClient](src/HttpClient.php).
 
 <a name="debugging"><h1>Отладка</h1></a>  
 Для логирования запросов и ответов используется [стандартный PSR-3 логгер](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md).
@@ -47,11 +65,23 @@
     use Monolog\Handler\StreamHandler;
     
     $log = new Logger('name');
-    $log->pushHandler(new StreamHandler('log.txt', Logger::INFO));
+    $log->pushHandler(new StreamHandler('/path/to/log.txt', Logger::INFO));
 
     $Client = new \FsDeliverySdk\Client('eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9');
     $Client->setLogger($log);
 ```
+
+Или можно использовать встроенный в SDK [Logger](src/Log/Logger.php), который умеет писать в текстовые файлы
+
+```php
+<?php
+    $log = new \FsDeliverySdk\Log\Logger();
+    $log->setFilePath('/path/to/log.txt');
+
+    $Client = new \FsDeliverySdk\Client('eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9');
+    $Client->setLogger($log);
+```
+
 В log.txt будут логи в виде:
 ```
 [2021-12-18T16:55:44.886552+00:00] name.INFO: FsDelivery API POST request /1.0/tariff/calculation: {"tariff_id_list":[136,137,233,234,4000,4001,4003],"delivery_company_id":[1,55],"sender_city_id":44,"reciver_city_index":630001,"packages":[{"length":10,"height":10,"width":10,"weight":0.5}],"items":[{"insurance":1000,"payment_sum":1000}]} [] []

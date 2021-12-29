@@ -3,28 +3,36 @@
 namespace FsDeliverySdk;
 
 use FsDeliverySdk\Exception\FsDeliveryException;
+use FsDeliverySdk\Log\LoggerInterface;
 use FsDeliverySdk\ValueObject\CalculateParams;
 use FsDeliverySdk\ValueObject\CitiesFilter;
 use FsDeliverySdk\ValueObject\OrderFilter;
 use FsDeliverySdk\ValueObject\OrderStatusFilter;
 use FsDeliverySdk\ValueObject\PvzFilter;
 use FsDeliverySdk\ValueObject\ReestrFilter;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
+use FsDeliverySdk\Log\LoggerAwareInterface;
 
 class Client implements LoggerAwareInterface
 {
-    use LoggerAwareTrait;
-
     const VERSION = '1.0';
 
+    /** @var LoggerInterface|null */
+    private $logger = null;
     /** @var string */
     private $token = null;
-    /** @var \GuzzleHttp\Client|null */
+    /** @var \GuzzleHttp\Client|HttpClient|null */
     private $httpClient = null;
-
     /** @var string|null */
     private $last_request_id = null;
+
+    /**
+     * @param LoggerInterface $logger
+     * @return void
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+    }
 
     /**
      * Client constructor.
@@ -35,11 +43,18 @@ class Client implements LoggerAwareInterface
     public function __construct($apitoken, $timeout = 300, $api_uri = 'https://api.fsdelivery.ru')
     {
         $this->setToken($apitoken);
-        $this->httpClient = new \GuzzleHttp\Client([
-            'base_uri' => $api_uri.'/',
-            'timeout' => $timeout,
-            'http_errors' => false
-        ]);
+
+        try {
+            $this->httpClient = new \GuzzleHttp\Client([
+                'base_uri' => $api_uri . '/',
+                'timeout' => $timeout,
+                'http_errors' => false
+            ]);
+        }
+
+        catch (\Throwable $e) {
+            $this->httpClient = new HttpClient($api_uri.'/', $timeout);
+        }
     }
 
     /**
@@ -89,6 +104,77 @@ class Client implements LoggerAwareInterface
      */
     private function callApi($type, $method, $params = [])
     {
+        if (is_a($this->httpClient, HttpClient::class)) {
+            return $this->callApiBasicClient($type, $method, $params);
+        }
+
+        if (is_a($this->httpClient, \GuzzleHttp\Client::class)) {
+            return $this->callApiGuzzle($type, $method, $params);
+        }
+    }
+
+    /**
+     * Инициализирует вызов к API через встроенный http-клиент
+     *
+     * @param $type
+     * @param $method
+     * @param array $params
+     * @return array
+     * @throws FsDeliveryException
+     */
+    private function callApiBasicClient($type, $method, $params = []) {
+        $headers['X-API-TOKEN'] = $this->getToken();
+
+        switch ($type) {
+            case 'GET':
+                if ($this->logger) {
+                    $this->logger->info("FsDelivery API {$type} request /{$method}: " . http_build_query($params));
+                }
+                $json = $this->httpClient->get($method, $params, $headers);
+                break;
+            case 'POST':
+                if ($this->logger) {
+                    $this->logger->info("FsDelivery API {$type} request /{$method}: " . json_encode($params));
+                }
+                $json = $this->httpClient->post($method, $params, $headers);
+                break;
+        }
+
+        $request = http_build_query($params);
+
+        if ($this->logger) {
+            $headers = $this->httpClient->headers;
+            $this->logger->info("FsDelivery API response /{$method}: " . $json, $headers);
+        }
+
+        $respFS = json_decode($json, true);
+        $this->last_request_id = $respFS['request_id'];
+
+        if (in_array($this->httpClient->http_status_code, [401, 403]))
+            throw new FsDeliveryException('Ошибка авторизации при вызове метода /' . $method . ': ' . $respFS['error_message'], $respFS['error_code'], $json, $request);
+
+        if ($this->httpClient->http_status_code != 200)
+            throw new FsDeliveryException('Неверный код ответа от сервера FsDelivery при вызове метода /' . $method . ': ' . $this->httpClient->http_status_code, $this->httpClient->http_status_code, $json, $request);
+
+        if (empty($respFS))
+            throw new FsDeliveryException('От сервера FsDelivery при вызове метода /' . $method . ' пришел пустой ответ', $this->httpClient->http_status_code, $json, $request);
+
+        if (!empty($respFS['error_code']))
+            throw new FsDeliveryException('От сервера FsDelivery при вызове метода /' . $method . ' получена ошибка: ' . $respFS['error_message'], $respFS['error_code'], $json, $request);
+
+        return $respFS;
+    }
+
+    /**
+     * Инициализирует вызов к API через Guzzle
+     *
+     * @param $type
+     * @param $method
+     * @param array $params
+     * @return array
+     * @throws FsDeliveryException
+     */
+    private function callApiGuzzle($type, $method, $params = []) {
         $headers['X-API-TOKEN'] = $this->getToken();
 
         switch ($type) {
